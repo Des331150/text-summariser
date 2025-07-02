@@ -2,7 +2,8 @@ import os
 from fastapi import FastAPI, File, UploadFile
 from extraction import extract_text
 import tempfile
-
+from schemas import TextInput, SummaryText
+from summarize import summarize_text
 
 app = FastAPI()
 
@@ -19,3 +20,8 @@ async def extract_text(file: UploadFile = File(description="Extract files.")):
     text = extract_text(tmp_path)
     os.unlink(tmp_path)
     return {"text": text}
+
+@app.post("/summarize/", response_model=SummaryText)
+async def summarize_route(text: TextInput):
+    summary = summarize_text(text.text)
+    return {"summary": summary}
