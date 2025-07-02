@@ -1,7 +1,7 @@
 import pymupdf
 import re
 
-def extract_text(filepath: str, mode: str, value: str=""):
+def extract_text_from_pdf(filepath: str, mode: str, value: str=""):
     doc = pymupdf.open(filepath)
     with open("output.txt", "wb") as out:
         if mode == "full":
