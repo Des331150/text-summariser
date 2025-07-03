@@ -1,7 +1,7 @@
 import pymupdf
 import re
 
-def extract_text_from_pdf(filepath: str, mode: str, value: str=""):
+def extract_text_from_pdf(filepath: str, mode: str, value: str="", chapter: str | None = None, pages: str | None = None):
     doc = pymupdf.open(filepath)
     with open("output.txt", "wb") as out:
         if mode == "full":
@@ -10,12 +10,12 @@ def extract_text_from_pdf(filepath: str, mode: str, value: str=""):
                 out.write(text)
                 out.write(bytes((12,)))
 
-        elif mode == "page":
+        elif mode == "pages":
             try:
                 try:
                     page = doc[int(value)]
                 except ValueError:
-                    return "Page should be an integer."
+                    return None
                 text = page.get_text().encode("utf-8")
                 out.write(text)
             except IndexError:
@@ -26,7 +26,7 @@ def extract_text_from_pdf(filepath: str, mode: str, value: str=""):
             try:
                 start_page = int(value)
             except ValueError:
-                return "Chapter should be an integer."
+                return None
             in_chapter = False
 
             for i in range(start_page, len(doc)):
@@ -47,3 +47,6 @@ def extract_text_from_pdf(filepath: str, mode: str, value: str=""):
 
         else:
             return "Invalid mode."
+    
+    with open("output.txt", "r", encoding="utf-8") as result:
+        return result.read()
