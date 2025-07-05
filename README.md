@@ -38,6 +38,7 @@ Uploads a PDF file, extracts text, summarizes it, and returns a download link.
 - `pages`: (optional) Page numbers if `mode=pages`
 
 **Response:**
+
 ```json
 {
   "status": "success",
@@ -103,8 +104,9 @@ text-summarizer/
 Below are the main dependencies you need (add these to your `requirements.txt` if not already present):
 
 ```
+
 fastapi
 uvicorn
 pydantic
 python-multipart
-PyPDF2
+PyMuPDF
