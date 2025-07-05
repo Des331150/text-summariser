@@ -1,5 +1,6 @@
 import pymupdf
 import re
+from fastapi import HTTPException, status
 
 def extract_text_from_pdf(filepath: str, mode: str, value: str="", chapter: str | None = None, pages: str | None = None):
     doc = pymupdf.open(filepath)
@@ -11,22 +12,25 @@ def extract_text_from_pdf(filepath: str, mode: str, value: str="", chapter: str 
                 out.write(bytes((12,)))
 
         elif mode == "pages":
-            try:
                 try:
-                    page = doc[int(value)]
+                    page_numbers = [int(p.strip()) for p in pages.split(",")] 
                 except ValueError:
-                    return None
-                text = page.get_text().encode("utf-8")
-                out.write(text)
-            except IndexError:
-                return "Page number doesn't exist."
+                    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid page numbers format")
+                
+                for page in page_numbers:
+                    try:
+                        page = doc[page]
+                        text = page.get_text().encode("utf-8")
+                        out.write(text)
+                    except IndexError:
+                        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Page {page} not found in the document") 
 
         elif mode == "chapter":
             pattern = r"(?i)\bchapter\b[\s:]*\d+"
             try:
-                start_page = int(value)
+                start_page = int((value))
             except ValueError:
-                return None
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid start page format")
             in_chapter = False
 
             for i in range(start_page, len(doc)):
@@ -43,7 +47,7 @@ def extract_text_from_pdf(filepath: str, mode: str, value: str="", chapter: str 
                     out.write(text.encode("utf-8"))
 
             if not in_chapter:
-                return "No chapter found"
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Chapter not found")
 
         else:
             return "Invalid mode."

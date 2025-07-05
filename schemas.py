@@ -5,3 +5,4 @@ class TextInput(BaseModel):
 
 class SummaryText(BaseModel):
     summary: str
+    download_link: str 
