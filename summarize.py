@@ -1,6 +1,6 @@
 from transformers import pipeline
 
-summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
+summarizer = pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")
 
 def summarize_text(text: str):
     truncated_text = text[:1000]
